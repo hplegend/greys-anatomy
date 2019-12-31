@@ -13,10 +13,12 @@ public class AgentLauncher {
     private static volatile ClassLoader greysClassLoader;
 
     public static void premain(String args, Instrumentation inst) {
+        System.out.println("链接上jvm");
         main(args, inst);
     }
 
     public static void agentmain(String args, Instrumentation inst) {
+        System.out.println("链接上jvm");
         main(args, inst);
     }
 
@@ -128,6 +130,7 @@ public class AgentLauncher {
 
             if (!isBind) {
                 try {
+                    System.out.println("bind Success");
                     classOfGaServer.getMethod("bind", classOfConfigure).invoke(objectOfGaServer, objectOfConfigure);
                 } catch (Throwable t) {
                     classOfGaServer.getMethod("destroy").invoke(objectOfGaServer);

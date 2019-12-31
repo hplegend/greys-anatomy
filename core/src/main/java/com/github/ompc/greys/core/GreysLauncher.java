@@ -106,7 +106,10 @@ public class GreysLauncher {
         try {
             new GreysLauncher(args);
         } catch (Throwable t) {
-            System.err.println("start greys failed, because : " + getCauseMessage(t));
+            for (StackTraceElement varTarce : t.getStackTrace()) {
+                 System.err.println(varTarce.getClassName()+", "+ varTarce.getMethodName()+", "+ varTarce.getLineNumber());
+            }
+            System.err.println("start greys failed, because : {}" + getCauseMessage(t));
             System.exit(-1);
         }
     }
