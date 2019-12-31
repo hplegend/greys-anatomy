@@ -9,7 +9,6 @@ REM ----------------------------------------------------------------------------
 
 
 set ERROR_CODE=0
-set TELNET_PORT=5986
 set HTTP_PORT=8563
 
 REM set BASEDIR=%~dp0
@@ -68,11 +67,10 @@ if not %1/==/ (
     goto read_params
 )
 
-if not "%telnet-port%"=="" set TELNET_PORT=%telnet-port%
 if not "%http-port%"=="" set HTTP_PORT=%http-port%
 
 echo JAVA_HOME: %JAVA_HOME%
-echo telnet port: %TELNET_PORT%
+echo telnet ip and port: %TARGET_TELNET_IP% %TARGET_TELNET_PORT%
 echo http port: %HTTP_PORT%
 
 REM Setup JAVA_HOME
@@ -102,6 +100,7 @@ goto exit_bat
 :okJava
 set JAVACMD="%JAVA_HOME%"\bin\java
 
+REM 执行java命令。JAVACMD 就是 java命令，后面就是一堆参数，这些参数就是main使用的，并通过sock绑定到vm然后进行通信。
 %JAVACMD% -Dfile.encoding=UTF-8 %BOOT_CLASSPATH% -jar "%CORE_JAR%" -pid "%PID%"  -core "%CORE_JAR%" -agent "%AGENT_JAR%" -target "%TARGET_TELNET_IP%:%TARGET_TELNET_PORT%"
 if %ERRORLEVEL% NEQ 0 goto exit_bat
 if %exitProcess%==1 goto exit_bat
