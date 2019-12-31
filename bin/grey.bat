@@ -1,20 +1,21 @@
 @echo off
 
 REM ----------------------------------------------------------------------------
-REM  program : Arthas
-REM   author : Core Engine @ Taobao.com
-REM     date : 2015-11-11
-REM  version : 3.0
+REM  program : greys
+REM  author : hplegend
+REM  date : 2019-12-31
+REM  notice：注意，要再powershell或者cmd窗口执行，attach vm后才会telent 链接上
 REM ----------------------------------------------------------------------------
 
 
 
 set ERROR_CODE=0
-set TELNET_PORT=3658
+set TELNET_PORT=5986
 set HTTP_PORT=8563
 
 REM set BASEDIR=%~dp0
-set BASEDIR=C:\Users\hp.he\.greys\lib
+REM 这里要注意，window下要用绝对路径，否则就会加载不到agent。估计是代码写的有问题，classloader没写好
+set BASEDIR=D:\hplegend\greysAgent
 
 if ["%~1"]==[""] (
   echo Example:
