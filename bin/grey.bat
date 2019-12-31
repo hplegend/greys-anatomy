@@ -8,7 +8,6 @@ REM  notice：注意，要再powershell或者cmd窗口执行，attach vm后才�
 REM ----------------------------------------------------------------------------
 
 
-
 set ERROR_CODE=0
 set TELNET_PORT=5986
 set HTTP_PORT=8563
@@ -30,7 +29,8 @@ set AGENT_JAR=%BASEDIR%\greys-agent.jar
 set CORE_JAR=%BASEDIR%\greys-core.jar
 
 set PID=%1
-set TARGET_TELNET=%2
+set TARGET_TELNET_IP=%2
+set TARGET_TELNET_PORT=%3
 
 echo %PID%| findstr /r "^[1-9][0-9]*$">nul
 
@@ -102,7 +102,7 @@ goto exit_bat
 :okJava
 set JAVACMD="%JAVA_HOME%"\bin\java
 
-%JAVACMD% -Dfile.encoding=UTF-8 %BOOT_CLASSPATH% -jar "%CORE_JAR%" -pid "%PID%"  -core "%CORE_JAR%" -agent "%AGENT_JAR%" -target "%TARGET_TELNET%"
+%JAVACMD% -Dfile.encoding=UTF-8 %BOOT_CLASSPATH% -jar "%CORE_JAR%" -pid "%PID%"  -core "%CORE_JAR%" -agent "%AGENT_JAR%" -target "%TARGET_TELNET_IP%:%TARGET_TELNET_PORT%"
 if %ERRORLEVEL% NEQ 0 goto exit_bat
 if %exitProcess%==1 goto exit_bat
 goto attachSuccess
@@ -115,7 +115,7 @@ IF %ERRORLEVEL% NEQ 0 (
   ECHO Try to visit http://127.0.0.1:%HTTP_PORT% to connecto arthas server.
   start http://127.0.0.1:%HTTP_PORT%
 ) else (
-  telnet 127.0.0.1 %TELNET_PORT%
+  telnet %TARGET_TELNET_IP% %TARGET_TELNET_PORT%
 )
 
 :exit_bat
