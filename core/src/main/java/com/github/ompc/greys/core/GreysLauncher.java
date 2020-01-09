@@ -30,6 +30,7 @@ public class GreysLauncher {
     public GreysLauncher(String[] args) throws Exception {
 
         // 解析配置文件
+        // 解析参数
         Configure configure = analyzeConfigure(args);
 
         // 加载agent
@@ -64,8 +65,10 @@ public class GreysLauncher {
         return configure;
     }
 
-    /*
+    /**
      * 加载Agent
+     * 这里设计的只能加载本地的jvm，无法加载远程的jvm
+     * java agent的通用思路，不过需要java/tools.jar的支持
      */
     private void attachAgent(Configure configure) throws Exception {
 
@@ -107,7 +110,7 @@ public class GreysLauncher {
             new GreysLauncher(args);
         } catch (Throwable t) {
             for (StackTraceElement varTarce : t.getStackTrace()) {
-                 System.err.println(varTarce.getClassName()+", "+ varTarce.getMethodName()+", "+ varTarce.getLineNumber());
+                System.err.println(varTarce.getClassName() + ", " + varTarce.getMethodName() + ", " + varTarce.getLineNumber());
             }
             System.err.println("start greys failed, because : {}" + getCauseMessage(t));
             System.exit(-1);

@@ -41,6 +41,7 @@ import static org.objectweb.asm.ClassWriter.COMPUTE_MAXS;
 
 
 /**
+ * 实现ClassFileTransformer，意思就是可以用来重新定义class
  * 对类进行通知增强
  * Created by oldmanpushcart@gmail.com on 15/5/17.
  */
@@ -169,6 +170,10 @@ public class Enhancer implements ClassFileTransformer {
 
     }
 
+
+    /**
+     * 开始对方法或者类增强，替换到类文件
+     */
     @Override
     public byte[] transform(
             final ClassLoader inClassLoader,
@@ -182,6 +187,7 @@ public class Enhancer implements ClassFileTransformer {
             return null;
         }
 
+        // 字节码输入
         final ClassReader cr;
 
         // 首先先检查是否在缓存中存在Class字节码
@@ -241,6 +247,7 @@ public class Enhancer implements ClassFileTransformer {
         try {
 
             // 生成增强字节码
+            // 访问者模式，AdviceWeaver继承了ClassVisitor，在AdviceWeaver中改写字节码
             cr.accept(new AdviceWeaver(adviceId, isTracing, cr.getClassName(), asmMethodMatcher, affect, cw), EXPAND_FRAMES);
             final byte[] enhanceClassByteArray = cw.toByteArray();
 
@@ -403,12 +410,16 @@ public class Enhancer implements ClassFileTransformer {
 
         final EnhancerAffect affect = new EnhancerAffect();
 
-
+        // pointCut->切点，实际上就是一堆的正则匹配表达式
+        // 然后从jvm所有加载的类中根据正则规则匹配出class和方法等等。
+        // 返回的结果：匹配的类，以及类对应的匹配上的方法
         final Map<Class<?>, Matcher<AsmMethod>> enhanceMap = toEnhanceMap(pointCut);
 
         // 构建增强器
+        // asm 开始上场
         final Enhancer enhancer = new Enhancer(adviceId, isTracing, enhanceMap, affect);
         try {
+            // 设定class转换器
             inst.addTransformer(enhancer, true);
 
             // 批量增强
@@ -417,6 +428,8 @@ public class Enhancer implements ClassFileTransformer {
                 final Class<?>[] classArray = new Class<?>[size];
                 arraycopy(enhanceMap.keySet().toArray(), 0, classArray, 0, size);
                 if (classArray.length > 0) {
+                    // 这里会调用enhancer的的transform方法
+                    // 也就是重新更新当前的类class文件
                     inst.retransformClasses(classArray);
                 }
             }

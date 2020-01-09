@@ -151,9 +151,13 @@ public class GaServer {
      */
     private void initForManager(final Instrumentation inst) {
         TimeFragmentManager.Factory.getInstance();
+
+        // 这句话的意思：把jvm加载的所有类交给反射管理器管理。
+        // 那么反射管理器是干嘛用的呢？
         ReflectManager.Factory.initInstance(new ClassDataSource() {
             @Override
             public Collection<Class<?>> allLoadedClasses() {
+                // inst 获取pid jvm加载的全部类
                 final Class<?>[] classArray = inst.getAllLoadedClasses();
                 return null == classArray
                         ? new ArrayList<Class<?>>()
@@ -177,18 +181,24 @@ public class GaServer {
 
     /**
      * 启动Greys服务端
+     * 主要就是启动socket的server端，便于外部通信
      *
      * @param configure 配置信息
      * @throws IOException 服务器启动失败
      */
     public void bind(Configure configure) throws IOException {
+
+        // cas 加锁。 整个实例只有一份锁
         if (!isBindRef.compareAndSet(false, true)) {
             throw new IllegalStateException("already bind");
         }
 
         try {
 
+            // java de nio : new io, 或许可以叫做非阻塞式io
             serverSocketChannel = ServerSocketChannel.open();
+
+            // nio 操作中，selector是核心部件用于监听和接受
             selector = Selector.open();
 
             serverSocketChannel.configureBlocking(false);
@@ -197,6 +207,7 @@ public class GaServer {
             serverSocketChannel.register(selector, OP_ACCEPT);
 
             // 服务器挂载端口
+            // 服务器打开端口
             serverSocketChannel.socket().bind(getInetSocketAddress(configure.getTargetIp(), configure.getTargetPort()), 24);
             logger.info("ga-server listening on network={};port={};timeout={};", configure.getTargetIp(),
                     configure.getTargetPort(),
@@ -225,6 +236,10 @@ public class GaServer {
     }
 
 
+    /**
+     * 设置一个守护进程。（守护进程，意思就是不阻碍程序关闭，如果程序的其他线程全部结束，只剩下守护进程，那么程序也会终止）
+     * 因此，通常守护进程肯定就是循环监听，或者循环处理某一个事件。
+     */
     private void activeSelectorDaemon(final Selector selector, final Configure configure) {
 
         final ByteBuffer byteBuffer = ByteBuffer.allocate(BUFFER_SIZE);
@@ -233,8 +248,9 @@ public class GaServer {
             @Override
             public void run() {
 
-                while (!isInterrupted()
-                        && isBind()) {
+                // isInterrupted 用于判断线程是否被中断，一种优雅的结束线程的方式：设置线程的中断标志。
+                // 只要线程没有被中断，且当前的线程仍旧处于绑定中，那么就一直执行
+                while (!isInterrupted() && isBind()) {
 
                     try {
 
@@ -242,6 +258,8 @@ public class GaServer {
                                 && selector.select() > 0) {
                             final Iterator<SelectionKey> it = selector.selectedKeys().iterator();
                             while (it.hasNext()) {
+
+                                // key已经保存了，后续能找到
                                 final SelectionKey key = it.next();
                                 it.remove();
 
@@ -285,7 +303,9 @@ public class GaServer {
         socketChannel.socket().setTcpNoDelay(true);
 
 
+        // 用于保存socket接口
         final Session session = sessionManager.newSession(javaPid, socketChannel, DEFAULT_CHARSET);
+
         socketChannel.register(selector, OP_READ, new GaAttachment(BUFFER_SIZE, session));
         logger.info("accept new connection, client={}@session[{}]", socketChannel, session.getSessionId());
 
@@ -314,7 +334,7 @@ public class GaServer {
                 logger.info("client={}@session[{}] was closed.", socketChannel, session.getSessionId());
                 // closeSocketChannel(key, socketChannel);
                 session.destroy();
-                if(session.isLocked()) {
+                if (session.isLocked()) {
                     session.unLock();
                 }
                 return;
@@ -324,6 +344,9 @@ public class GaServer {
             byteBuffer.flip();
             while (byteBuffer.hasRemaining()) {
                 switch (attachment.getLineDecodeState()) {
+
+                    // 如果读取的是字符
+                    // 放到attachment缓存中
                     case READ_CHAR: {
                         final byte data = byteBuffer.get();
 
@@ -348,9 +371,11 @@ public class GaServer {
 
                     }
 
+                    // 如果读取到换行符，结束。此时获取到了一条完整的命令
                     case READ_EOL: {
                         final String line = attachment.clearAndGetLine(session.getCharset());
 
+                        // 开启异步线程去执行
                         executorService.execute(new Runnable() {
                             @Override
                             public void run() {

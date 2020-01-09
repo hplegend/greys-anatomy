@@ -195,11 +195,13 @@ public class DefaultCommandHandler implements CommandHandler {
 
         };
 
-
+        // 开始执行命令
         try {
 
             // 影响反馈
             final Affect affect;
+
+            // 接受命令应该执行的动作
             final Action action = command.getAction();
 
             // 无任何后续动作的动作
@@ -221,6 +223,8 @@ public class DefaultCommandHandler implements CommandHandler {
                 affect = new EnhancerAffect();
 
                 // 执行命令动作 & 获取增强器
+                // 需要增强的调用核心就是在这里了
+                // 当然实际的核心逻辑，肯定在command里面
                 final Command.GetEnhancer getEnhancer = ((GetEnhancerAction) action).action(session, inst, printer);
                 final int lock = session.getLock();
                 final AdviceListener listener = getEnhancer.getAdviceListener();

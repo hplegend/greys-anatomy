@@ -99,6 +99,7 @@ class AsmTryCatchBlock {
 }
 
 /**
+ * ASM 访问者编程模型 ClassVisitor
  * 通知编织者<br/>
  * <p/>
  * <h2>线程帧栈与执行帧栈</h2>
@@ -486,6 +487,10 @@ public class AdviceWeaver extends ClassVisitor implements Opcodes {
                 || isEquals(name, "<clinit>");
     }
 
+
+    /**
+     * 字节码visitor重新visitMethod方法
+     */
     @Override
     public MethodVisitor visitMethod(
             final int access,
@@ -503,6 +508,11 @@ public class AdviceWeaver extends ClassVisitor implements Opcodes {
         // 编织方法计数
         affect.mCnt(1);
 
+
+        /**
+         * ASM 做增强的核心代码。子定义adapter，然后根据需求重写ASM操作字节码的方法。
+         * ASM的字节码指令是执行类的，因此主要流程在于改写字节码的执行流程
+         * */
         return new AdviceAdapter(ASM5, new JSRInlinerAdapter(mv, access, name, desc, signature, exceptions), access, name, desc) {
 
             // -- Lebel for try...catch block
@@ -554,6 +564,7 @@ public class AdviceWeaver extends ClassVisitor implements Opcodes {
 
             /**
              * 加载通知方法
+             * 钩子方法
              * @param keyOfMethod 通知方法KEY
              */
             private void loadAdviceMethod(int keyOfMethod) {

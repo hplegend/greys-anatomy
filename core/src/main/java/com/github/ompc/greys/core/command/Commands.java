@@ -50,11 +50,14 @@ public class Commands {
 
         final String[] splitOfLine = GaStringUtils.splitForArgument(line);
         final String cmdName = splitOfLine[0];
+
+        // 获取命令的执行类
         final Class<?> clazz = getInstance().commands.get(cmdName);
         if (null == clazz) {
             throw new CommandNotFoundException(cmdName);
         }
 
+        // 反射到实例类
         final Command command;
         try {
             command = (Command) clazz.newInstance();
@@ -64,6 +67,8 @@ public class Commands {
 
 
         try {
+
+            // 解析命令行参数值
             final OptionSet opt = getOptionParser(clazz).parse(splitOfLine);
 
             for (final Field field : clazz.getDeclaredFields()) {
