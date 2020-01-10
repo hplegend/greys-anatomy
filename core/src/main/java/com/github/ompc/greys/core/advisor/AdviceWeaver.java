@@ -136,6 +136,10 @@ public class AdviceWeaver extends ClassVisitor implements Opcodes {
     /**
      * 方法开始<br/>
      * 用于编织通知器,外部不会直接调用
+     * 这里的调用主要在于Spy间谍类初始化的时候，保存了改方法的method引用。
+     * 这里的钩子方法，实际上调用了ASM的getStatic指令执行。
+     * <p>
+     * 看到这里，用ASM操作字节码，最常用的方式还是直接调用静态方法，因为静态方法用ASM的接口比较容易调用。
      *
      * @param loader     类加载器
      * @param adviceId   通知ID

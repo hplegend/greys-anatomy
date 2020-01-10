@@ -209,4 +209,9 @@ public class GaClassUtils {
         return targetClassSet;
     }
 
+
+    public static boolean isLambdaClass(Class<?> clazz) {
+        return clazz.getName().contains("$$Lambda$");
+    }
+
 }

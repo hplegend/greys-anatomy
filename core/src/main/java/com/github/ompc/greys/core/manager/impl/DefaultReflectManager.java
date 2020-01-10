@@ -5,7 +5,9 @@ import com.github.ompc.greys.core.GlobalOptions;
 import com.github.ompc.greys.core.manager.ReflectManager;
 import com.github.ompc.greys.core.util.GaCheckUtils;
 import com.github.ompc.greys.core.util.GaMethod;
+import com.github.ompc.greys.core.util.LogUtil;
 import com.github.ompc.greys.core.util.matcher.Matcher;
+import org.slf4j.Logger;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -23,9 +25,16 @@ import static com.github.ompc.greys.core.util.GaReflectUtils.recGetSuperClass;
  */
 public class DefaultReflectManager implements ReflectManager {
 
+    private Logger logger = LogUtil.getLogger();
     private final ClassDataSource classDataSource;
 
     public DefaultReflectManager(ClassDataSource classDataSource) {
+        // 打印一次系统加载到的类
+         Iterator iterator =  classDataSource.allLoadedClasses().iterator();
+         while (iterator.hasNext()) {
+             logger.info("greys load class : {}", ((Class<?>)iterator.next()).getName());
+         }
+
         this.classDataSource = classDataSource;
     }
 

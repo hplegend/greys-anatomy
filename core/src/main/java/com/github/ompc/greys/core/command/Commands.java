@@ -23,6 +23,9 @@ public class Commands {
 
     private final Map<String, Class<?>> commands = new HashMap<String, Class<?>>();
 
+    /**
+     * command 自解析，自加载
+     */
     private Commands() {
 
         for (final Class<?> clazz : GaClassUtils.scanPackage(Commands.class.getClassLoader(), "com.github.ompc.greys.core.command")) {
