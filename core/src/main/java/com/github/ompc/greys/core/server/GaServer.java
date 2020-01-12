@@ -140,6 +140,7 @@ public class GaServer {
         this.sessionManager = new DefaultSessionManager();
         this.commandHandler = new DefaultCommandHandler(this, inst);
 
+        // 加载所有的系统类
         initForManager(inst);
 
         Runtime.getRuntime().addShutdownHook(jvmShutdownHooker);

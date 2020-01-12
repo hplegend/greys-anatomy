@@ -6,6 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * 支持的指令，必须要用这个注解
+ * <p>
  * 指令集
  */
 @Retention(RetentionPolicy.RUNTIME)

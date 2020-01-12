@@ -96,7 +96,6 @@ public class JadCmmand implements Command {
                     return;
                 }
 
-
                 // 执行反汇编
                String sourceCode = doDecompile(session, inst, matchedClassSet);
 
@@ -125,7 +124,7 @@ public class JadCmmand implements Command {
                 tTable.addRow("THREAD", drawThreadTable());
 
                 //开始输出
-                printer.print(sourceCode).finish();
+                printer.print( LangRenderUtil.render(sourceCode)).finish();
 
             }
         };
