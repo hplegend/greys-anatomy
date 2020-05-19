@@ -76,7 +76,6 @@ public class JadCmmand implements Command {
     private final Collection<GarbageCollectorMXBean> garbageCollectorMXBeans = ManagementFactory.getGarbageCollectorMXBeans();
     private final Collection<MemoryManagerMXBean> memoryManagerMXBeans = ManagementFactory.getMemoryManagerMXBeans();
     private final MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
-    //    private final Collection<MemoryPoolMXBean> memoryPoolMXBeans = ManagementFactory.getMemoryPoolMXBeans();
     private final OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
     private final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
 
@@ -85,7 +84,7 @@ public class JadCmmand implements Command {
         return new SilentAction() {
             @Override
             public void action(Session session, Instrumentation inst, Printer printer) throws Throwable {
-                logger.info("jad class pattern={}" , classPattern);
+                logger.info("jad class pattern={}", classPattern);
                 // 执行类匹配
                 final ClassMatcher classMatcher = new ClassMatcher(new PatternMatcher(false, classPattern));
                 final Collection<Class<?>> matchedClassSet = reflectManager.searchClassWithSubClass(classMatcher);
@@ -97,7 +96,7 @@ public class JadCmmand implements Command {
                 }
 
                 // 执行反汇编
-               String sourceCode = doDecompile(session, inst, matchedClassSet);
+                String sourceCode = doDecompile(session, inst, matchedClassSet);
 
                 // 执行结果输出
                 final TTable tTable = new TTable(new TTable.ColumnDefine[]{
@@ -124,8 +123,7 @@ public class JadCmmand implements Command {
                 tTable.addRow("THREAD", drawThreadTable());
 
                 //开始输出
-                printer.print( LangRenderUtil.render(sourceCode)).finish();
-
+                printer.print(LangRenderUtil.render(sourceCode)).finish();
             }
         };
     }

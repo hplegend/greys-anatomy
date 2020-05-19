@@ -89,6 +89,8 @@ public interface Command {
 
     /**
      * 类增强动作
+     *
+     * 这类动作通常是ASM字节码修改
      */
     interface GetEnhancerAction extends Action {
 
