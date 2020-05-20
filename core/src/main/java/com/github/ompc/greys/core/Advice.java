@@ -5,7 +5,7 @@ import com.github.ompc.greys.core.util.GaMethod;
 import com.github.ompc.greys.core.util.LazyGet;
 
 /**
- * 通知点
+ * 通知点，可以认为是spring的切点
  */
 public final class Advice {
 

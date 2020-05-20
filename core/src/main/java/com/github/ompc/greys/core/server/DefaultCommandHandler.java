@@ -140,7 +140,7 @@ public class DefaultCommandHandler implements CommandHandler {
     }
 
 
-    /*
+    /**
      * 执行命令
      */
     private void execute(final Session session, final Command command) throws GaExecuteException, IOException {
@@ -154,7 +154,7 @@ public class DefaultCommandHandler implements CommandHandler {
             @Override
             public Printer print(boolean isF, String message) {
 
-                if(isFinishRef.get()) {
+                if (isFinishRef.get()) {
                     return this;
                 }
 
@@ -202,6 +202,7 @@ public class DefaultCommandHandler implements CommandHandler {
             final Affect affect;
 
             // 接受命令应该执行的动作
+            // 根据命令获取执行动作
             final Action action = command.getAction();
 
             // 无任何后续动作的动作
@@ -225,9 +226,12 @@ public class DefaultCommandHandler implements CommandHandler {
                 // 执行命令动作 & 获取增强器
                 // 需要增强的调用核心就是在这里了
                 // 当然实际的核心逻辑，肯定在command里面
+                // 这一这里的printer,是作为参数传入的，这一的话再钩子函数内部，就能执行结果的会写
                 final Command.GetEnhancer getEnhancer = ((GetEnhancerAction) action).action(session, inst, printer);
                 final int lock = session.getLock();
                 final AdviceListener listener = getEnhancer.getAdviceListener();
+
+                // 这里才是真实的enhence增强流程
                 final EnhancerAffect enhancerAffect = Enhancer.enhance(
                         inst,
                         lock,

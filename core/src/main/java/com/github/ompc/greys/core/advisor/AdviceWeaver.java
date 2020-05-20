@@ -182,6 +182,7 @@ public class AdviceWeaver extends ClassVisitor implements Opcodes {
             before(listener, loader, className, methodName, methodDesc, target, args);
 
             // 保护当前执行帧栈,压入线程帧栈
+            // 这里的栈帧仅仅是一个模拟，并非真正的jvm栈，实际上就是一个调用当前环境的保存而已
             threadFrameStackPush(frameStack);
         } finally {
             isSelfCallRef.set(false);

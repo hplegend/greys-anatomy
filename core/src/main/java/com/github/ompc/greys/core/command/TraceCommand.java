@@ -104,6 +104,8 @@ public class TraceCommand implements Command {
 
                             private final AtomicInteger timesRef = new AtomicInteger();
                             private final InvokeCost invokeCost = new InvokeCost();
+
+                            // thread local key-value 只有一个
                             private final ThreadLocal<Trace> traceRef = new ThreadLocal<Trace>();
 
                             @Override
